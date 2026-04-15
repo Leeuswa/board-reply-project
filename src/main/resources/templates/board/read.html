@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+
+<head>
+    <title>Board Read</title>
+</head>
+
+<div layout:fragment="content">
+    <div class="row mt-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    Board Read
+                </div>
+                <div class="card-body">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Bno</span>
+                        <input type="text" class="form-control" th:value="${dto.bno}" readonly>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Title</span>
+                        <input type="text" class="form-control" th:value="${dto.title}" readonly>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Content</span>
+                        <textarea class="form-control col-sm-5" rows="5" readonly>[[${dto.content}]]</textarea>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Writer</span>
+                        <input type="text" class="form-control" th:value="${dto.writer}" readonly>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">RegDate</span>
+                        <input type="text" class="form-control" th:value="${#temporals.format(dto.regDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">ModDate</span>
+                        <input type="text" class="form-control" th:value="${#temporals.format(dto.modDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
+                    </div>
+
+                    <div class="my-4">
+                        <div class="float-end" th:with="link = ${pageRequestDTO.getLink()}">
+                            <a th:href="|@{/board/list}?${link}|" class="text-decoration-none">
+                                <button type="button" class="btn btn-primary">List</button>
+                            </a>
+                            <a th:href="|@{/board/modify(bno=${dto.bno})}&${link}|" class="text-decoration-none">
+                                <button type="button" class="btn btn-secondary">Modify</button>
+                            </a>
+                        </div>
+                    </div>
+
+
+                </div><!--end card body-->
+
+
+
+            </div><!--end card-->
+        </div><!-- end col-->
+    </div><!-- end row-->
+
+    <div class ="row mt-3">
+        <div class ="col-md-12">
+            <div class="my-4">
+                <button class="btn btn-info  addReplyBtn">ADD REPLY</button>
+            </div>
+            <ul class="list-group replyList">
+            </ul>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <ul class = "pagination replyPaging"></ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script src="/js/reply.js"></script>
+
+</div>
+
+
+<script layout:fragment="script" th:inline="javascript">
+
+    const bno = [[${dto.bno}]]
+    // console.log("bno:", bno);
+    // get1(bno)
+    // console.log((get1(bno)))
+
+    // get1(bno).then(
+    //     data => {console.log(data)}
+    // ).catch(e => console.error(e))
+
+    function printReplies(page, size, goLast){
+        getList({bno, page, size, goLast}).then(
+            data => {console.log(data)}
+        ).catch(e => {
+            console.error(e)
+        })
+    }
+
+    printReplies(1, 10)
+
+    const replyList = document.querySelector('.replyList') // 댓글 목록 DOM
+    const replyPaging = document.querySelector('.replyPaging') // 페이지 목록 DOM
+
+    function printList(dtoList) { //댓글 목록 출력
+        let str = ''; // html에 문자열을 저장할 변수
+        //dtoList가 존재하고, 길이가 0보다 클 경우 (댓글이 있을경유)
+        if (dtoList && dtoList.length > 0) {
+            //dtoList 배열을 순회하면서 각 댓글(dto) 정보를 추가
+            for (const dto of dtoList) {
+                str += `<li class="list-group-item d-flex replyItem">
+                <span class="col-2">${dto.rno}</span>  <!-- 댓글번호 -->
+                <span class="col-6" data-rno="${dto.rno}">${dto.replyText}</span> <!-- 댓글 내용 -->
+                <span class="col-2">${dto.replyer}</span> <!-- 작성자 -->
+                <span class="col-2">${dto.regDate}</span> <!-- 작성 날짜 -->
+            </li>`;
+            }
+        }
+        replyList.innerHTML = str;
+    }
+
+</script>

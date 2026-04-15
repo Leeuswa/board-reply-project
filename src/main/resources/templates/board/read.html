@@ -126,4 +126,30 @@
         replyList.innerHTML = str;
     }
 
+    function printPages(data) { //페이지 목록 출력
+        //pagination
+        let pageStr = ''; // 페이지 html을 저장할 변수
+        //"PREV" 버튼 추가 (이전 페이지가 있을 경우)
+
+        if (data.prev) {
+            pageStr += `<li class="page-item">
+            <a class="page-link" data-page="${data.start - 1}">PREV</a>
+        </li>`;
+        }
+        //페이지 번호 버튼 추가
+        for (let i = data.start; i <= data.end; i++) {
+            pageStr += `<li class="page-item ${i == data.page ? "active" : ""}">
+            <a class="page-link" data-page="${i}">${i}</a>
+        </li>`;
+        }
+        //"next"버튼 추가(다음 페이지가 있을경우)
+        if (data.next) {
+            pageStr += `<li class="page-item">
+            <a class="page-link" data-page="${data.end + 1}">NEXT</a>
+        </li>`;
+        }
+
+        replyPaging.innerHTML = pageStr;
+    }
+
 </script>
